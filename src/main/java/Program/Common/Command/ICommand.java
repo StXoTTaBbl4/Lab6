@@ -7,6 +7,14 @@ import java.util.LinkedList;
  * интерфейс, служащий гарантом того что любая команда будет содержать требуемый набор методов.
  */
 public interface ICommand {
+
+    /**
+     *
+     * @param args Команда и аргументы со стороны клиента.
+     * @return true если ввод соотвествует базовым требованиям команды.
+     */
+    Boolean inputValidate(String args);
+
     /**
      *
      * @param args Аргументы команды.
