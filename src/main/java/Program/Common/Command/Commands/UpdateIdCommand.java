@@ -18,6 +18,15 @@ public class UpdateIdCommand implements ICommand {
 
 
     @Override
+    public Boolean inputValidate(String args) {
+        try {
+            return !args.equals("");
+        }catch (NullPointerException e){
+            return false;
+        }
+    }
+
+    @Override
     public LinkedList<Worker> handle(String args, LinkedList<Worker> WorkerData) {
 
         String[] data = args.replaceAll(",", "").split(" ");

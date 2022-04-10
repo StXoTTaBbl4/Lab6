@@ -1,3 +1,4 @@
 Manifest-Version: 1.0
-Main-Class: Program.Terminal
+Main-Class: Program.Server.Server
+Main-Class: Program.Client.Client
 

@@ -23,6 +23,11 @@ public class SaveCommand implements ICommand {
     }
 
     @Override
+    public Boolean inputValidate(String args) {
+       return false;
+    }
+
+    @Override
     public LinkedList<Worker> handle(String path, LinkedList<Worker> WorkersData) {
 
         if(!Files.exists(Paths.get(path))){

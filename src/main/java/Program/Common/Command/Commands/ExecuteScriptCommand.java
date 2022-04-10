@@ -24,6 +24,23 @@ public class ExecuteScriptCommand implements ICommand {
     }
 
     @Override
+    public Boolean inputValidate(String args) {
+        if(args.equals("")){
+            System.out.println("You must specify the path to the file.");
+            return false;
+        }
+        else {
+            try {
+                Scanner scanner = new Scanner(new FileInputStream(args));
+                return true;
+            } catch (FileNotFoundException e) {
+                System.out.println("The specified file does not exist.");
+                return false;
+            }
+        }
+    }
+
+    @Override
     public LinkedList<Worker> handle(String args, LinkedList<Worker> WorkersData) {
 
         Scanner scanner = null;
@@ -42,11 +59,16 @@ public class ExecuteScriptCommand implements ICommand {
             }
         }
 
-        while(scanner.hasNext()){
-            String line = scanner.nextLine();
-            System.out.println("Command execution: " + line + ".\n");
-            localList = manager.CommandHandler(line, localList);
+        try {
+            while(scanner.hasNext()){
+                String line = scanner.nextLine();
+                System.out.println("Command execution: " + line + ".\n");
+                localList = manager.CommandHandler(line, localList);
+            }
+        }catch (StackOverflowError e){
+            System.out.println("Recursion detected, script aborted.");
         }
+
 
         System.out.println("Script completed:\n" +
                             "accept result - 1,\n" +

@@ -15,13 +15,19 @@ import java.util.LinkedList;
  */
 public class InfoCommand  implements ICommand {
     String path;
-
     /**
-     *
      * @param path Путь к файлу коллекции.
      */
+
     public InfoCommand(String path) {
         this.path = path;
+    }
+
+    public InfoCommand() {}
+
+    @Override
+    public Boolean inputValidate(String args) {
+        return true;
     }
 
     @Override

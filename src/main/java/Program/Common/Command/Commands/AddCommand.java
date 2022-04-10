@@ -18,6 +18,20 @@ import java.util.NoSuchElementException;
 public class AddCommand implements ICommand {
 
     @Override
+    public Boolean inputValidate(String args) {
+        String[] userData = args.split(",");
+        for (int i = 0; i < userData.length; i++) {
+            userData[i] = userData[i].trim();
+        }
+
+        if(userData.length < 13){
+            System.out.println("Not all options are specified.");
+            return false;
+        }else
+            return true;
+    }
+
+    @Override
     public LinkedList<Worker> handle(String args,LinkedList<Worker> WorkerData) {
 
         Collections.sort(WorkerData);

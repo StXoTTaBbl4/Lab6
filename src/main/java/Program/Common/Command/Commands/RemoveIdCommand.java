@@ -10,6 +10,17 @@ import java.util.LinkedList;
  */
 public class RemoveIdCommand implements ICommand {
     @Override
+    public Boolean inputValidate(String args) {
+        try{
+            int id = Integer.parseInt(args);
+            return true;
+        }catch (NumberFormatException e){
+            System.out.println("id must be Integer");
+            return false;
+        }
+    }
+
+    @Override
     public LinkedList<Worker> handle(String args, LinkedList<Worker> WorkersData) {
         int id;
 

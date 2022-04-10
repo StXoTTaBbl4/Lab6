@@ -10,6 +10,11 @@ import java.util.LinkedList;
  */
 public class GroupCbsCommand implements ICommand {
     @Override
+    public Boolean inputValidate(String args) {
+        return true;
+    }
+
+    @Override
     public LinkedList<Worker> handle(String args, LinkedList<Worker> WorkersData) {
 
         if(WorkersData.size() == 0) {
@@ -19,7 +24,7 @@ public class GroupCbsCommand implements ICommand {
             System.out.printf("There is only 1 item in the collection with salary %s.\n", WorkersData.get(0).getSalary());
         }
         else {
-            float minSalary = Integer.MAX_VALUE,
+            float minSalary = Float.MAX_VALUE,
                                 maxSalary = 0,
                                 middleSalary,
                                 midMinSalary,

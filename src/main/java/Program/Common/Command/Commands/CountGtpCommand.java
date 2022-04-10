@@ -11,6 +11,18 @@ import java.util.LinkedList;
  */
 public class CountGtpCommand implements ICommand {
     @Override
+    public Boolean inputValidate(String args) {
+        String[] userData = args.replaceAll(",","").split(" ");
+        if(userData.length < 5){
+            System.out.println("The person fields are incorrect, should be 5.\n" +
+                                "Example: 2002-02-02 12:20 180 75 passID.");
+            return false;
+        }
+        else
+            return true;
+    }
+
+    @Override
     public LinkedList<Worker> handle(String args, LinkedList<Worker> WorkersData) {
 
         AddCommand addCommand = new AddCommand();

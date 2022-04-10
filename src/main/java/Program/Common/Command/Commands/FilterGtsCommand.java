@@ -10,6 +10,17 @@ import java.util.LinkedList;
  */
 public class FilterGtsCommand implements ICommand {
     @Override
+    public Boolean inputValidate(String args) {
+        try{
+            Float.parseFloat(args);
+            return true;
+        }catch (NumberFormatException e){
+            System.out.println("Некорректный тип данных");
+            return false;
+        }
+    }
+
+    @Override
     public LinkedList<Worker> handle(String args, LinkedList<Worker> WorkersData) {
 
         Float salary = null;

@@ -20,6 +20,11 @@ public class AddIfMaxCommand implements ICommand {
     }
 
     @Override
+    public Boolean inputValidate(String args) {
+        return true;
+    }
+
+    @Override
     public LinkedList<Worker> handle(String args, LinkedList<Worker> WorkersData) {
 
         AddIfMaxComparator addIfMaxComparator = new AddIfMaxComparator();

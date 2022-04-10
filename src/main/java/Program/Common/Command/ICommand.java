@@ -21,6 +21,7 @@ public interface ICommand {
      * @param WorkersData Коллекция с объектами.
      * @return Коллекция после ее обработки командой.
      */
+    //Поментять на InnerServerTransporter
     LinkedList<Worker> handle(String args, LinkedList<Worker> WorkersData);
 
     /** Метод возвращает имя команды.

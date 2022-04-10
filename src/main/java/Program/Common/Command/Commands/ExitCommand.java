@@ -10,6 +10,11 @@ import java.util.LinkedList;
  */
 public class ExitCommand implements ICommand {
     @Override
+    public Boolean inputValidate(String args) {
+        return true;
+    }
+
+    @Override
     public LinkedList<Worker> handle(String args, LinkedList<Worker> WorkersData) {
         System.exit(0);
         return WorkersData;

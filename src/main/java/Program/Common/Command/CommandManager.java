@@ -2,6 +2,7 @@ package Program.Common.Command;
 
 import Program.Common.Command.Commands.*;
 import Program.Common.Command.Commands.AddIfMax.AddIfMaxCommand;
+import Program.Common.DataClasses.Transporter;
 import Program.Common.DataClasses.Worker;
 
 import java.util.ArrayList;
@@ -23,10 +24,10 @@ public class CommandManager {
         return commands;
     }
 
-    /** Конструктор, в который добавляются все объекты классов-команд с помощью {@link CommandManager#addCommand(ICommand)}.
+    /**
+     * Конструктор, в который добавляются все объекты классов-команд с помощью {@link CommandManager#addCommand(ICommand)}.
      *
-     *
-     * @param path Путь к файлу, содержащему коллекцию.
+     * @param path Путь к файлу, содержащему коллекцию, используется "серверной" частью.
      */
     public CommandManager(String path){
         addCommand(new AddCommand());
@@ -47,7 +48,31 @@ public class CommandManager {
         addCommand(new UpdateIdCommand());
     }
 
-    /** Внутренний метод для добавления команды в общий список доступных команд.
+    /**
+     * Конструктор, в который добавляются все объекты классов-команд с помощью {@link CommandManager#addCommand(ICommand)}.
+     * Для "клиентской" части.
+     */
+    public CommandManager(){
+        addCommand(new AddCommand());
+        addCommand(new AddIfMaxCommand(this));
+        addCommand(new ClearCommand());
+        addCommand(new CountGtpCommand());
+        addCommand(new ExecuteScriptCommand(this));
+        addCommand(new ExitCommand());
+        addCommand(new FilterGtsCommand());
+        addCommand(new GroupCbsCommand());
+        addCommand(new HelpCommand(this));
+        addCommand(new InfoCommand());
+        addCommand(new RemoveIdCommand());
+        addCommand(new RemoveLastCommand());
+        addCommand(new SaveCommand());
+        addCommand(new ShowCommand());
+        addCommand(new SortCommand());
+        addCommand(new UpdateIdCommand());
+    }
+
+    /**
+     * Внутренний метод для добавления команды в общий список доступных команд.
      *
      * @param cmd Объект класса-команды
      */
@@ -60,7 +85,6 @@ public class CommandManager {
     }
 
     /** Метод для поиска команды по ее имени.
-     *
      * @param search имя искомой команды.
      * @return В случае существования команды возвращает объект класса-команды.
      */
@@ -76,7 +100,6 @@ public class CommandManager {
     }
 
     /** Метод, передающий параметры для исполнения команды методу handle объекта класса-команды.
-     *
      * @param input Строка, содержащая има команды и аргументы.
      * @param WorkerData Коллекция, с которой взаимодействует программа.
      * @return Коллекция после ее обработки в соответствии с командой.
@@ -86,13 +109,33 @@ public class CommandManager {
 
         ICommand cmd  = this.getCommand(data[0]);
 
+            if (cmd != null) {
+                List<String> args = Arrays.asList(data).subList(1, data.length);
+
+                WorkerData = cmd.handle(args.toString().substring(1, args.toString().length() - 1), WorkerData);
+            } else {
+                System.out.println("Command not found!\n");
+            }
+        return WorkerData;
+    }
+
+    /**
+     * @param t Объект класса {@link Transporter}, содержащий данные от пользователя(команда + аргументы).
+     * @return true, если команда соотвествует минимальным требованиям объекта класса-команды для выполнения.
+     */
+    public Boolean validate(Transporter t){
+        String[] data = t.getCommand().split(" ");
+        ICommand cmd  = this.getCommand(data[0]);
+        boolean val = false;
+
         if(cmd != null){
             List<String> args = Arrays.asList(data).subList(1, data.length);
 
-              WorkerData = cmd.handle(args.toString().substring(1,args.toString().length()-1), WorkerData);
+            val = cmd.inputValidate(args.toString().substring(1,args.toString().length()-1));
         }else{
             System.out.println("Command not found!\n");
         }
-        return WorkerData;
+
+        return val;
     }
 }
