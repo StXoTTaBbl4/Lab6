@@ -3,22 +3,26 @@ package Program.Server;
 import Program.Common.CollectionInit.Initializer;
 import Program.Common.Command.CommandManager;
 import Program.Common.Command.Commands.SaveCommand;
-import Program.Common.Communicator;
 import Program.Common.DataClasses.Transporter;
 import Program.Common.DataClasses.Worker;
 import Program.Common.Serializer;
 
 import java.io.*;
 import java.net.*;
-import java.nio.file.Watchable;
 import java.util.LinkedList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class ServerInit {
-    private final CommandManager manager = new CommandManager();
     private LinkedList<Worker> WorkersData;
     private String path;
+    private int port;
+    private String ip;
+
+    public ServerInit(int port, String ip) {
+        this.port = port;
+        this.ip = ip;
+    }
 
     private LinkedList<Worker> getWorkersData() {
         return WorkersData;
@@ -37,13 +41,8 @@ public class ServerInit {
     }
 
     void initialize() {
-        try {
-            path = getPath();
-        } catch (ArrayIndexOutOfBoundsException | NullPointerException e) {
-            System.out.println("Path to file?");
-            e.printStackTrace();
-            System.exit(0);
-        }
+
+        final CommandManager manager = new CommandManager(path);
 
         Initializer initializer = new Initializer();
         WorkersData = initializer.initializeCollection(path);
@@ -67,6 +66,7 @@ public class ServerInit {
         byte[] buffer = new byte[65536];
         Serializer serializer = new Serializer();
         Transporter transporter = new Transporter();
+        InnerServerTransporter innerTransporter = new InnerServerTransporter();
         DatagramPacket incoming = new DatagramPacket(buffer, buffer.length);
 
         //System.out.println("Ожидаем данные...");
@@ -82,101 +82,32 @@ public class ServerInit {
 
                 System.out.println("Сервер получил: " + transporter.getCommand());
 
-                WorkersData = manager.CommandHandler(transporter.getCommand(), WorkersData);
-                setWorkersData(WorkersData);
+                innerTransporter.setWorkersData(WorkersData);
+                innerTransporter.setArgs(transporter.getCommand());
+                innerTransporter.setIncome(incoming);
+                innerTransporter.setSocket(socket);
+                innerTransporter = manager.CommandHandler(innerTransporter);
+                setWorkersData(innerTransporter.getWorkersData());
 
+                transporter.setMessage(innerTransporter.getMsg());
                 //Отправляем данные клиенту
                 data = serializer.serialize(transporter);
                 DatagramPacket dp = new DatagramPacket(data, data.length, incoming.getAddress(), incoming.getPort());
                 socket.send(dp);
-            }catch (IOException | ClassNotFoundException e){
+            }catch (SocketException e){
+                transporter.setMessage("A program execution error occurred, message was not generated.");
+                byte[] data = incoming.getData();
+                try {
+                    data = serializer.serialize(transporter);
+                    DatagramPacket dp = new DatagramPacket(data, data.length, incoming.getAddress(), incoming.getPort());
+                    socket.send(dp);
+                } catch (IOException ex) {ex.printStackTrace();}
+            }
+            catch (IOException | ClassNotFoundException e){
                 e.printStackTrace();
             }
         }
 
-        /*
-        byte[] buffer = new byte[65536];
-        DatagramPacket income = new DatagramPacket(buffer, buffer.length);
-        Transporter transporter = new Transporter();
-        Serializer serializer = new Serializer();
-        Communicator communicator = new Communicator();
-
-
-        while (true){
-            try {
-                transporter = communicator.receive(socket, serializer);
-                System.out.println(transporter.getCommand());
-
-            }catch (IOException | ClassNotFoundException e){
-                e.printStackTrace();
-                System.out.println("Failed to receive data");
-            }
-
-            //обработка
-
-            transporter.setMessage("Принято");
-
-            if(manager.validate(transporter))
-                try {
-                    communicator.send(transporter, serializer, socket, income.getAddress(), income.getPort());
-                }catch (IOException e){
-                    System.out.println("Response sending error.");
-                }
-
-        }
-
-         */
-
-        //=================================================================
-
-        /*
-        //Создание сокета
-        ServerSocket serverSocket = null;
-        try {
-            serverSocket = new ServerSocket(56666);
-            System.out.println(serverSocket.getLocalSocketAddress());
-        }
-        catch (IOException e){
-            System.out.println("Cannot create socket.");
-            System.exit(0);
-        }
-        System.out.println("Server started!");
-
-        Socket socket;
-        BufferedWriter writer = null;
-        BufferedReader reader = null;
-        try {
-            socket = serverSocket.accept();
-            writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
-            reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-        } catch (IOException e) {
-            System.out.println("I/O error during socket creation.");
-            System.exit(0);
-        }
-
-        while (true) {
-            try {
-                String request = reader.readLine();
-                System.out.println(request);
-
-                writer.write("There is your answer.");
-                writer.newLine();
-                writer.flush();
-            }catch (IOException e){
-                System.out.println("Ошибка I/O в процессе обработки запроса.");
-            }
-            catch (NullPointerException e){
-                try {
-                    writer.write("There is no request.");
-                    writer.newLine();
-                    writer.flush();
-                } catch (IOException ex) {
-                    ex.printStackTrace();
-                }
-            }
-
-        }
-        */
     }
 
     public void consoleMonitor() {
@@ -189,8 +120,11 @@ public class ServerInit {
                 if (s.contains("save")){
                     try{
                         String[] p = s.split(" ");
+                        InnerServerTransporter transporter = new InnerServerTransporter();
+                        transporter.setArgs(p[1]);
+                        transporter.setWorkersData(getWorkersData());
                         SaveCommand saveCommand = new SaveCommand();
-                        saveCommand.handle(p[1],getWorkersData());
+                        saveCommand.handle(transporter);
                     }
                     catch (ArrayIndexOutOfBoundsException | NullPointerException e){
                         System.out.println("You must specify the path to save the collection.");

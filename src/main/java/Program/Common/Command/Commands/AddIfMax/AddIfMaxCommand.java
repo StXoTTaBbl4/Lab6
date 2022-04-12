@@ -3,6 +3,7 @@ package Program.Common.Command.Commands.AddIfMax;
 import Program.Common.Command.CommandManager;
 import Program.Common.Command.ICommand;
 import Program.Common.DataClasses.Worker;
+import Program.Server.InnerServerTransporter;
 
 import java.util.Collections;
 import java.util.LinkedList;
@@ -25,13 +26,17 @@ public class AddIfMaxCommand implements ICommand {
     }
 
     @Override
-    public LinkedList<Worker> handle(String args, LinkedList<Worker> WorkersData) {
+    public InnerServerTransporter handle(InnerServerTransporter transporter) {
 
         AddIfMaxComparator addIfMaxComparator = new AddIfMaxComparator();
+        LinkedList<Worker> WorkersData = transporter.getWorkersData();
+        String args = transporter.getArgs();
 
         Collections.sort(WorkersData);
         LinkedList<Worker> newWorker = new LinkedList<>();
-        Worker worker = manager.CommandHandler("add " + args.replaceAll(",",""),newWorker).get(0);
+        transporter.setArgs("add " + args.replaceAll(",",""));
+        transporter.setWorkersData(newWorker);
+        Worker worker = manager.CommandHandler(transporter).getWorkersData().get(0);
 
         try{
             worker.setId(WorkersData.getLast().getId()+1);
@@ -39,7 +44,9 @@ public class AddIfMaxCommand implements ICommand {
         catch (NoSuchElementException e){
             worker.setId(1);
             WorkersData.add(worker);
-            return WorkersData;
+            transporter.setWorkersData(WorkersData);
+            transporter.setMsg("Command completed.");
+            return transporter;
         }
 
         WorkersData.sort(addIfMaxComparator);
@@ -48,10 +55,11 @@ public class AddIfMaxCommand implements ICommand {
                 WorkersData.add(worker);
         }
         catch (IndexOutOfBoundsException e){
-            System.out.println("Список пуст, не с чем сравнивать.");
+            transporter.setMsg("Список пуст, не с чем сравнивать.");
+            return transporter;
         }
 
-        return WorkersData;
+        return transporter;
     }
 
     @Override

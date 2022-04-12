@@ -2,6 +2,7 @@ package Program.Common.Command.Commands;
 
 import Program.Common.Command.ICommand;
 import Program.Common.DataClasses.Worker;
+import Program.Server.InnerServerTransporter;
 
 import java.util.LinkedList;
 
@@ -15,13 +16,15 @@ public class GroupCbsCommand implements ICommand {
     }
 
     @Override
-    public LinkedList<Worker> handle(String args, LinkedList<Worker> WorkersData) {
+    public InnerServerTransporter handle(InnerServerTransporter transporter) {
+
+        LinkedList<Worker> WorkersData = transporter.getWorkersData();
 
         if(WorkersData.size() == 0) {
-            System.out.println("Коллекция пуста.");
+            transporter.setMsg("The collection is empty.");
         }
         else if(WorkersData.size() < 2) {
-            System.out.printf("There is only 1 item in the collection with salary %s.\n", WorkersData.get(0).getSalary());
+            transporter.setMsg("There is only 1 item in the collection with salary " + WorkersData.get(0).getSalary() +".\n");
         }
         else {
             float minSalary = Float.MAX_VALUE,
@@ -38,19 +41,22 @@ public class GroupCbsCommand implements ICommand {
             }
 
             if(maxSalary == minSalary){
-                System.out.printf("All items in the collection have a salary of %s.\n", minSalary);
+                transporter.setMsg("All items in the collection have a salary of " + minSalary +".\n");
             }
             else {
                 middleSalary = (minSalary + maxSalary) / 2;
                 midMinSalary = (middleSalary + minSalary) / 2;
                 midMaxSalary = (middleSalary + maxSalary) / 2;
 
-                printData(minSalary, midMinSalary, WorkersData);
-                printData(midMinSalary + 0.1F, midMaxSalary, WorkersData);
-                printData(midMaxSalary + 0.1F, maxSalary, WorkersData);
+                StringBuilder stringBuilder = new StringBuilder();
+                stringBuilder.append(printData(minSalary, midMinSalary, WorkersData));
+                stringBuilder.append(printData(midMinSalary + 0.1F, midMaxSalary, WorkersData));
+                stringBuilder.append(printData(midMaxSalary + 0.1F, maxSalary, WorkersData));
+
+                transporter.setMsg(String.valueOf(stringBuilder));
             }
         }
-        return WorkersData;
+        return transporter;
     }
 
     @Override
@@ -63,14 +69,16 @@ public class GroupCbsCommand implements ICommand {
         return "Groups the elements of the collection by the value of the salary field, displays the number of elements in each group.";
     }
 
-    private void printData(float leftBorder, float rightBorder, LinkedList<Worker> WorkersData){
-        System.out.println("Зарплата от " + leftBorder + " до " + rightBorder);
+    private String printData(float leftBorder, float rightBorder, LinkedList<Worker> WorkersData){
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("Зарплата от ").append(leftBorder).append(" до ").append(rightBorder);
         int k = 0;
         for (Worker w: WorkersData) {
             if(w.getSalary() >= leftBorder && w.getSalary() <= rightBorder)
                 k++;
         }
-        System.out.println(k + "\n");
+        stringBuilder.append(k).append("\n");
+        return String.valueOf(stringBuilder);
     }
 
 

@@ -2,6 +2,7 @@ package Program.Common.Command.Commands;
 
 import Program.Common.Command.ICommand;
 import Program.Common.DataClasses.Worker;
+import Program.Server.InnerServerTransporter;
 
 import java.util.LinkedList;
 
@@ -21,26 +22,29 @@ public class RemoveIdCommand implements ICommand {
     }
 
     @Override
-    public LinkedList<Worker> handle(String args, LinkedList<Worker> WorkersData) {
+    public InnerServerTransporter handle(InnerServerTransporter transporter) {
         int id;
+        LinkedList<Worker> WorkersData = transporter.getWorkersData();
 
         try {
-            id = Integer.parseInt(args);
+            id = Integer.parseInt(transporter.getArgs());
         } catch (NumberFormatException e) {
-            System.out.println("ID must be a positive integer greater than 0.");
-            return WorkersData;
+            transporter.setMsg("ID must be a positive integer greater than 0.");
+            return transporter;
         }
 
         for(Worker worker : WorkersData){
             if(worker.getId() == id){
                 WorkersData.remove(worker);
-                return WorkersData;
+                transporter.setWorkersData(WorkersData);
+                transporter.setMsg("Command completed.");
+                return transporter;
             }
         }
 
-        System.out.println("There is no worker with this id.");
+        transporter.setMsg("There is no worker with this id.");
 
-        return WorkersData;
+        return transporter;
     }
 
     @Override

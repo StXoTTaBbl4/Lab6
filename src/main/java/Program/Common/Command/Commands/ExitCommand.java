@@ -2,6 +2,7 @@ package Program.Common.Command.Commands;
 
 import Program.Common.Command.ICommand;
 import Program.Common.DataClasses.Worker;
+import Program.Server.InnerServerTransporter;
 
 import java.util.LinkedList;
 
@@ -15,9 +16,9 @@ public class ExitCommand implements ICommand {
     }
 
     @Override
-    public LinkedList<Worker> handle(String args, LinkedList<Worker> WorkersData) {
-        System.exit(0);
-        return WorkersData;
+    public InnerServerTransporter handle(InnerServerTransporter transporter) {
+        //System.exit(0);
+        return transporter;
     }
 
     @Override

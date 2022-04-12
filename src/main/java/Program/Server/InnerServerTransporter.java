@@ -2,12 +2,19 @@ package Program.Server;
 
 import Program.Common.DataClasses.Worker;
 
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
 import java.util.LinkedList;
 
-class InnerServerTransporter {
+/**
+ * Класс для работы с коллекцией на стороне сервера.
+ */
+public class InnerServerTransporter {
     LinkedList<Worker> WorkersData = null;
     String args;
-    String errorMsg = null;
+    String msg = null;
+    DatagramSocket socket;
+    DatagramPacket income;
 
     public LinkedList<Worker> getWorkersData() {
         return WorkersData;
@@ -17,11 +24,35 @@ class InnerServerTransporter {
         WorkersData = workersData;
     }
 
-    public String getErrorMsg() {
-        return errorMsg;
+    public String getMsg() {
+        return msg;
     }
 
-    public void setErrorMsg(String errorMsg) {
-        this.errorMsg = errorMsg;
+    public void setMsg(String msg) {
+        this.msg = msg;
+    }
+
+    public String getArgs() {
+        return args;
+    }
+
+    public void setArgs(String args) {
+        this.args = args;
+    }
+
+    public DatagramSocket getSocket() {
+        return socket;
+    }
+
+    public void setSocket(DatagramSocket socket) {
+        this.socket = socket;
+    }
+
+    public DatagramPacket getIncome() {
+        return income;
+    }
+
+    public void setIncome(DatagramPacket income) {
+        this.income = income;
     }
 }

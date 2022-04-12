@@ -2,6 +2,7 @@ package Program.Common.Command.Commands;
 
 import Program.Common.Command.ICommand;
 import Program.Common.DataClasses.Worker;
+import Program.Server.InnerServerTransporter;
 
 import java.util.LinkedList;
 
@@ -15,23 +16,29 @@ public class ShowCommand implements ICommand {
     }
 
     @Override
-    public LinkedList<Worker> handle(String args, LinkedList<Worker> WorkersData) {
+    public InnerServerTransporter handle(InnerServerTransporter transporter) {
+
+        LinkedList<Worker> WorkersData = transporter.getWorkersData();
 
             if(WorkersData.size() == 0) {
-                System.out.println("The collection is empty.");
-                return WorkersData;
+                transporter.setMsg("The collection is empty.");
+                return transporter;
             }
             else {
+                StringBuilder stringBuilder = new StringBuilder();
                 for (Worker worker : WorkersData) {
                     try {
-                        System.out.println(worker.toString());
+                        stringBuilder.append(worker.toString());
+                        stringBuilder.append("\n");
                     } catch (NullPointerException e) {
-                        System.out.println("Worker with id: " + worker.getId() + "have incorrect data.\n");
+                        stringBuilder.append("Worker with id: ").append(worker.getId()).append("have incorrect data.\n");
+                        stringBuilder.append("\n");
                     }
                 }
+                transporter.setMsg(String.valueOf(stringBuilder));
             }
 
-        return WorkersData;
+        return transporter;
     }
 
     @Override

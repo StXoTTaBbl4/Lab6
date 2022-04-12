@@ -1,6 +1,7 @@
 package Program.Common.Command;
 
 import Program.Common.DataClasses.Worker;
+import Program.Server.InnerServerTransporter;
 
 import java.util.LinkedList;
 /**
@@ -16,13 +17,11 @@ public interface ICommand {
     Boolean inputValidate(String args);
 
     /**
-     *
-     * @param args Аргументы команды.
-     * @param WorkersData Коллекция с объектами.
-     * @return Коллекция после ее обработки командой.
+     * @param transporter объект {@link InnerServerTransporter}, сожержащий данные для выполнения команды.
+     * @return объект, после его обработки командой.
      */
     //Поментять на InnerServerTransporter
-    LinkedList<Worker> handle(String args, LinkedList<Worker> WorkersData);
+    InnerServerTransporter handle(InnerServerTransporter transporter);
 
     /** Метод возвращает имя команды.
      *

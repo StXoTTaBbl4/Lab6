@@ -2,6 +2,7 @@ package Program.Common.Command.Commands;
 
 import Program.Common.Command.ICommand;
 import Program.Common.DataClasses.Worker;
+import Program.Server.InnerServerTransporter;
 
 import java.util.Collections;
 import java.util.LinkedList;
@@ -17,16 +18,18 @@ public class SortCommand implements ICommand {
     }
 
     @Override
-    public LinkedList<Worker> handle(String args, LinkedList<Worker> WorkersData) {
+    public InnerServerTransporter handle(InnerServerTransporter transporter) {
+        LinkedList<Worker> WorkersData = transporter.getWorkersData();
 
         try {
             Collections.sort(WorkersData);
+            transporter.setWorkersData(WorkersData);
+            transporter.setMsg("Command completed.");
         }catch (NullPointerException e){
-            System.out.println("Sorting error, checking the fields Coordinates, Person, Salary. They must not be null.");
+            transporter.setMsg("Sorting error, checking the fields Coordinates, Person, Salary. They must not be null.");
         }
 
-
-        return WorkersData;
+        return transporter;
     }
 
     @Override

@@ -8,6 +8,9 @@ import Program.Common.Serializer;
 import java.io.*;
 import java.net.*;
 
+/**
+ * Класс, объекты которого являются "клиентами" серверов. На его стороне не происходит непосредственного взаимодействия с коллекцией.
+ */
 public class Client {
 
     public static void main(String[] args) throws IOException {
@@ -39,11 +42,9 @@ public class Client {
             System.out.println("Request: ");
             String s = reader.readLine();
             transporter.setCommand(s);
-            //byte[] b;
 
             if (s.equals("exit"))
                 System.exit(0);
-
 
             if(isServerOnline(port)) {
                 if (manager.validate(transporter)) {
@@ -65,6 +66,7 @@ public class Client {
                     }
 
                     System.out.println("Сервер: " + reply.getAddress().getHostAddress() + ", порт: " + reply.getPort() + ", получил: " + transporter.getCommand());
+                    System.out.println(transporter.getMessage());
                 }
             }else
                 System.out.println("Server: offline");

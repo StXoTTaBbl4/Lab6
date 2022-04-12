@@ -4,7 +4,10 @@ import Program.Common.Command.Commands.*;
 import Program.Common.Command.Commands.AddIfMax.AddIfMaxCommand;
 import Program.Common.DataClasses.Transporter;
 import Program.Common.DataClasses.Worker;
+import Program.Server.InnerServerTransporter;
 
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -99,24 +102,25 @@ public class CommandManager {
         return null;
     }
 
-    /** Метод, передающий параметры для исполнения команды методу handle объекта класса-команды.
-     * @param input Строка, содержащая има команды и аргументы.
-     * @param WorkerData Коллекция, с которой взаимодействует программа.
-     * @return Коллекция после ее обработки в соответствии с командой.
+    /**
+     *
+     * @param transporter Объект, содержащий коллекцию, {@link InnerServerTransporter}.
+     * @return Объект, содержащий коллекцию после ее обработки командой и текст отчета.
      */
-    public LinkedList<Worker> CommandHandler(String input,LinkedList<Worker> WorkerData){
-        String[] data = input.split(" ");
+    public InnerServerTransporter CommandHandler(InnerServerTransporter transporter){
+        String[] data = transporter.getArgs().split(" ");
 
         ICommand cmd  = this.getCommand(data[0]);
 
             if (cmd != null) {
                 List<String> args = Arrays.asList(data).subList(1, data.length);
+                transporter.setArgs(args.toString().substring(1, args.toString().length() - 1));
 
-                WorkerData = cmd.handle(args.toString().substring(1, args.toString().length() - 1), WorkerData);
+                transporter = cmd.handle(transporter);
             } else {
                 System.out.println("Command not found!\n");
             }
-        return WorkerData;
+        return transporter;
     }
 
     /**

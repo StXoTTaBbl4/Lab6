@@ -1,12 +1,23 @@
 package Program.Server;
 
-import java.io.IOException;
-
+/**
+ * Класс для запуска сервера и его консоли {@link ServerInit#initialize()}, {@link ServerInit#consoleMonitor()}.
+ */
 public class Server {
     public static void main(String[] args){
-        ServerInit server = new ServerInit();
-        server.setPath("D:\\Workers.json");
-        server.execute();
+        ServerInit server;
+        try {
+            //server = new ServerInit(Integer.parseInt(args[0]),args[1]);
+            //server.setPath(args[2]);
+            server = new ServerInit(56666,"localhost");
+            server.setPath("D:\\Workers.json");
+            server.execute();
+        }catch (NumberFormatException e){
+            System.out.println("port: Integer");
+        }catch (ArrayIndexOutOfBoundsException e){
+            System.out.println("Ex: 56666 0.0.0.0 or 56666 localhost");
+        }
+
     }
 
 }

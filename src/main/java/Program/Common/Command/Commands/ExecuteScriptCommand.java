@@ -2,9 +2,13 @@ package Program.Common.Command.Commands;
 
 import Program.Common.Command.CommandManager;
 import Program.Common.Command.ICommand;
+import Program.Common.DataClasses.Transporter;
 import Program.Common.DataClasses.Worker;
+import Program.Common.Serializer;
+import Program.Server.InnerServerTransporter;
 
 import java.io.*;
+import java.net.DatagramPacket;
 import java.util.LinkedList;
 import java.util.Scanner;
 
@@ -41,49 +45,67 @@ public class ExecuteScriptCommand implements ICommand {
     }
 
     @Override
-    public LinkedList<Worker> handle(String args, LinkedList<Worker> WorkersData) {
+    public InnerServerTransporter handle(InnerServerTransporter transporter) {
 
-        Scanner scanner = null;
-        LinkedList<Worker> localList = WorkersData;
+        Scanner scanner;
+        LinkedList<Worker> localList = transporter.getWorkersData();
+        String args = transporter.getArgs();
 
-        if(args.equals("")){
-            System.out.println("You must specify the path to the file.");
-            System.exit(0);
-        }
-        else {
+        if (args.equals("")) {
+            transporter.setMsg("You must specify the path to the file.");
+            return transporter;
+        } else {
             try {
                 scanner = new Scanner(new FileInputStream(args));
             } catch (FileNotFoundException e) {
-                System.out.println("The specified file does not exist.");
-                return WorkersData;
+                transporter.setMsg("The specified file does not exist.");
+                return transporter;
             }
         }
 
+        if(!recursionCheck(scanner,args)){
+            transporter.setMsg("Recursion detected, script execution prohibited.");
+            return transporter;
+        }
+
+
+        StringBuilder stringBuilder = new StringBuilder();
         try {
-            while(scanner.hasNext()){
+            while (scanner.hasNext()) {
                 String line = scanner.nextLine();
-                System.out.println("Command execution: " + line + ".\n");
-                localList = manager.CommandHandler(line, localList);
+                transporter.setArgs(line);
+                stringBuilder.append("Command execution: ").append(line).append(".\n");
+                transporter = manager.CommandHandler(transporter);
+                stringBuilder.append(transporter.getMsg());
             }
-        }catch (StackOverflowError e){
-            System.out.println("Recursion detected, script aborted.");
+        } catch (StackOverflowError e) {
+            transporter.setMsg("Recursion detected, script aborted.");
+            return transporter;
         }
 
+        transporter.setMsg(String.valueOf(stringBuilder));
+        transporter.setWorkersData(localList);
+        return transporter;
+    }
+        /*
 
-        System.out.println("Script completed:\n" +
-                            "accept result - 1,\n" +
-                            "cancel - 2,\n" +
-                            "show result - 3.");
+         stringBuilder.append("Script completed:\n" +
+                "accept result - 1,\n" +
+                "cancel - 2,\n" +
+                "show result - 3.");
 
         while(true) {
+
             try {
                 BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
                 switch (reader.readLine()) {
                     case "1":
-                        return localList;
+                        transporter.setWorkersData(localList);
+                        return transporter;
                     case "2":
-                        return WorkersData;
+                        return transporter;
                     case "3":
+
                         for (Worker w:localList) {
                             System.out.println(w.toString());
                         }
@@ -95,7 +117,15 @@ public class ExecuteScriptCommand implements ICommand {
             }
 
         }
+        */
 
+    private boolean recursionCheck(Scanner scanner, String args){
+        while (scanner.hasNext()) {
+            String line = scanner.nextLine();
+            if(line.equals("execute_script " + args))
+                return false;
+        }
+    return true;
     }
 
     @Override

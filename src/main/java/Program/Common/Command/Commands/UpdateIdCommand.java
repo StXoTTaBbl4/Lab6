@@ -5,6 +5,7 @@ import Program.Common.DataClasses.Coordinates;
 import Program.Common.DataClasses.Person;
 import Program.Common.DataClasses.Position;
 import Program.Common.DataClasses.Worker;
+import Program.Server.InnerServerTransporter;
 
 import java.time.DateTimeException;
 import java.time.LocalDate;
@@ -27,9 +28,9 @@ public class UpdateIdCommand implements ICommand {
     }
 
     @Override
-    public LinkedList<Worker> handle(String args, LinkedList<Worker> WorkerData) {
-
-        String[] data = args.replaceAll(",", "").split(" ");
+    public InnerServerTransporter handle(InnerServerTransporter transporter) {
+        String[] data = transporter.getArgs().replaceAll(",", "").split(" ");
+        LinkedList<Worker> WorkerData = transporter.getWorkersData();
 
         Worker worker = null;
         for (Worker w: WorkerData) {
@@ -39,15 +40,16 @@ public class UpdateIdCommand implements ICommand {
             }
         }
 
-        if(worker == null)
-            System.out.println("No worker with this ID was found.");
+        if(worker == null) {
+            transporter.setMsg("No worker with this ID was found.");
+        }
         else {
             switch (data[1]){
                 case "name":
                     try {
                         worker.setName(data[2]);
                     }catch (ArrayIndexOutOfBoundsException e){
-                        System.out.println("The name field cannot be empty.");
+                        transporter.setMsg("The name field cannot be empty.");
                     }
                     break;
                 case"coordinates":
@@ -56,21 +58,23 @@ public class UpdateIdCommand implements ICommand {
                         worker.setCoordinates(coordinates);
                     }
                     catch (ArrayIndexOutOfBoundsException e){
-                        System.out.println("The x or y field cannot be empty.");
+                        transporter.setMsg("The x or y field cannot be empty.");
                     }
                     catch (NumberFormatException e){
-                        System.out.println("Invalid data type for x or y.");
+                        transporter.setMsg("Invalid data type for x or y.");
                     }
                     break;
                 case"salary":
                     try {
-                        if(Float.parseFloat(data[2]) > 0)
+                        if(Float.parseFloat(data[2]) > 0) {
                             worker.setSalary(Float.parseFloat(data[2]));
-                        else
-                            System.out.println("Salary cannot be 0.");
+                        }
+                        else {
+                            transporter.setMsg("Salary cannot be 0.");
+                        }
                     }
                     catch (NumberFormatException e){
-                        System.out.println("Invalid data type for salary.");
+                        transporter.setMsg("Invalid data type for salary.");
                     }
                     catch (ArrayIndexOutOfBoundsException t){
                         worker.setSalary(null);
@@ -84,7 +88,7 @@ public class UpdateIdCommand implements ICommand {
                                 Integer.parseInt(sd[2])));
                     }
                     catch (DateTimeException | ArrayIndexOutOfBoundsException | NumberFormatException e){
-                        System.out.println("Incorrect data. Format: Y-M-D.");
+                        transporter.setMsg("Incorrect data. Format: Y-M-D.");
                     }
                     break;
                 case"endDate":
@@ -99,7 +103,7 @@ public class UpdateIdCommand implements ICommand {
                                 Integer.parseInt(et[1])));
                     }
                     catch (DateTimeException | NumberFormatException e){
-                        System.out.println("Incorrect data. Format: Y-M-D H:M.");
+                        transporter.setMsg("Incorrect data. Format: Y-M-D H:M.");
                     }
                     catch ( ArrayIndexOutOfBoundsException e){
                         worker.setEndDate(null);
@@ -116,7 +120,7 @@ public class UpdateIdCommand implements ICommand {
                         worker.setPosition(null);
                     }
                     catch (IllegalArgumentException e){
-                        System.out.println("Incorrect data. Example: MANAGER.");
+                        transporter.setMsg("Incorrect data. Example: MANAGER.");
                     }
                     break;
                 case"person":
@@ -136,20 +140,21 @@ public class UpdateIdCommand implements ICommand {
                             person.setBirthday(null);
                     }
                     catch (DateTimeException | ArrayIndexOutOfBoundsException | NumberFormatException e ) {
-                        System.out.println("Invalid birthday field data. Format: Y-M-D H:M.");
+                        transporter.setMsg("Invalid birthday field data. Format: Y-M-D H:M.");
                     }
                     //height
                     try {
                         if(Integer.parseInt(data[4]) > 0)
                         person.setHeight(Integer.parseInt(data[4]));
-                        else
-                            System.out.println("The height parameter must be greater than 0.");
+                        else {
+                            transporter.setMsg("The height parameter must be greater than 0.");
+                        }
                     }
                     catch (NumberFormatException e){
-                        System.out.println("Invalid data type for salary.");
+                        transporter.setMsg("Invalid data type for salary.");
                     }
                     catch (ArrayIndexOutOfBoundsException e){
-                        System.out.println("The salary field cannot be empty.");
+                        transporter.setMsg("The salary field cannot be empty.");
                     }
                     //weight
                     try {
@@ -157,14 +162,15 @@ public class UpdateIdCommand implements ICommand {
                             person.setWeight(null);
                         else if(Float.parseFloat(data[5]) > 0)
                             person.setWeight(Float.parseFloat(data[5]));
-                        else
-                            System.out.println("Weight cannot be 0.");
+                        else {
+                            transporter.setMsg("Weight cannot be 0.");
+                        }
                     }
                     catch (NumberFormatException e){
-                        System.out.println("Invalid data type for weight.");
+                        transporter.setMsg("Invalid data type for weight.");
                     }
                     catch (ArrayIndexOutOfBoundsException e){
-                        System.out.println("The weight field cannot be empty.");
+                        transporter.setMsg("The weight field cannot be empty.");
                     }
                     //passportID
                     try{
@@ -175,17 +181,20 @@ public class UpdateIdCommand implements ICommand {
                         else
                             person.setPassportID(data[6]);
                     }catch (IllegalArgumentException | ArrayIndexOutOfBoundsException e){
-                        System.out.println("The passportID field must not be empty or\n " +
+                        transporter.setMsg("The passportID field must not be empty or\n " +
                                             "go beyond 4 - 29 characters.");
                     }
                     worker.setPerson(person);
                     break;
                 default:
-                    System.out.println("Field not found");
+                    transporter.setMsg("Field not found");
+                    break;
             }
             WorkerData.add(worker);
+            transporter.setMsg("Command completed.");
+            transporter.setWorkersData(WorkerData);
         }
-        return WorkerData;
+        return transporter;
     }
 
     @Override

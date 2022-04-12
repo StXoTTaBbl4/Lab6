@@ -2,6 +2,7 @@ package Program.Common.Command.Commands;
 
 import Program.Common.Command.ICommand;
 import Program.Common.DataClasses.Worker;
+import Program.Server.InnerServerTransporter;
 
 import java.io.File;
 import java.text.DateFormat;
@@ -31,16 +32,17 @@ public class InfoCommand  implements ICommand {
     }
 
     @Override
-    public LinkedList<Worker> handle(String args, LinkedList<Worker> WorkersData) {
+    public InnerServerTransporter handle(InnerServerTransporter transporter) {
         File file = new File(path);
+        LinkedList<Worker> WorkersData = transporter.getWorkersData();
         Date d = new Date(file.lastModified());
         DateFormat dateParser = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-        System.out.println("Type: " + WorkersData.getClass().toString().replace("class","")+ "\n" +
+        transporter.setMsg("Type: " + WorkersData.getClass().toString().replace("class","")+ "\n" +
                            "Last modified date: "+ dateParser.format(d) + "\n" +
                            "Number of elements: " + WorkersData.size() + "\n");
 
-        return WorkersData;
+        return transporter;
     }
 
     @Override

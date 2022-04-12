@@ -2,6 +2,7 @@ package Program.Common.Command.Commands;
 
 import Program.Common.Command.ICommand;
 import Program.Common.DataClasses.Worker;
+import Program.Server.InnerServerTransporter;
 
 import java.util.LinkedList;
 import java.util.NoSuchElementException;
@@ -16,15 +17,19 @@ public class RemoveLastCommand implements ICommand {
     }
 
     @Override
-    public LinkedList<Worker> handle(String args, LinkedList<Worker> WorkersData) {
+    public InnerServerTransporter handle(InnerServerTransporter transporter) {
+
+        LinkedList<Worker> WorkersData = transporter.getWorkersData();
 
         try {
             WorkersData.removeLast();
+            transporter.setWorkersData(WorkersData);
+            transporter.setMsg("Command completed.");
         }catch (NoSuchElementException e){
             System.out.println("Коллекция пуста.");
         }
 
-        return WorkersData;
+        return transporter;
     }
 
     @Override

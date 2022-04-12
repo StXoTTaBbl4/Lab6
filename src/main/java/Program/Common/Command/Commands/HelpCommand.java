@@ -3,6 +3,7 @@ package Program.Common.Command.Commands;
 import Program.Common.Command.CommandManager;
 import Program.Common.Command.ICommand;
 import Program.Common.DataClasses.Worker;
+import Program.Server.InnerServerTransporter;
 
 import java.util.LinkedList;
 
@@ -27,7 +28,9 @@ public class HelpCommand implements ICommand {
     }
 
     @Override
-    public LinkedList<Worker> handle(String args, LinkedList<Worker> WorkersData) {
+    public InnerServerTransporter handle(InnerServerTransporter transporter) {
+
+        String args = transporter.getArgs();
 
         if(args.isEmpty()){
             StringBuilder builder = new StringBuilder();
@@ -35,18 +38,18 @@ public class HelpCommand implements ICommand {
             builder.append("Command List:\n");
 
             manager.getCommands().stream().map(ICommand::getName).forEach((it) -> builder.append(it).append('\n'));
-            System.out.println(builder);
+            transporter.setMsg(String.valueOf(builder));
         }else {
 
             ICommand command = manager.getCommand(args);
 
             if (command == null) {
-                System.out.printf("Command + %s not found.\n", args);
+                transporter.setMsg("Command " + args + " not found.\n");
             }else{
-                System.out.println(command.getHelp());
+                transporter.setMsg(command.getHelp());
             }
         }
-        return WorkersData;
+        return transporter;
     }
 
     @Override

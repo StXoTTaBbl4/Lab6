@@ -2,7 +2,9 @@ package Program.Common.Command.Commands;
 
 import Program.Common.Command.ICommand;
 import Program.Common.DataClasses.Worker;
+import Program.Server.InnerServerTransporter;
 
+import java.io.LineNumberReader;
 import java.util.LinkedList;
 
 /**
@@ -21,28 +23,31 @@ public class FilterGtsCommand implements ICommand {
     }
 
     @Override
-    public LinkedList<Worker> handle(String args, LinkedList<Worker> WorkersData) {
-
+    public InnerServerTransporter handle(InnerServerTransporter transporter) {
+        String args = transporter.getArgs();
+        LinkedList<Worker> WorkersData = transporter.getWorkersData();
         Float salary = null;
         try {
             salary = Float.parseFloat(args);
         }
             catch (NumberFormatException e){
-            System.out.println("Invalid data type. Example: 1500.99.");
+            transporter.setMsg("Invalid data type. Example: 1500.99.");
+            return transporter;
         }
 
+        StringBuilder stringBuilder = new StringBuilder();
         for (Worker w : WorkersData) {
             try {
                 if(w.getSalary() > salary)
-                    System.out.println(w);
+                    stringBuilder.append(w);
                 }
             catch (NullPointerException e){
                 if(w.getSalary() == null)
-                System.out.printf("The salary field is not set for id: %s.\n", w.getId());
+                stringBuilder.append("The salary field is not set for id: " + w.getId() +" .\n");
             }
         }
-
-        return WorkersData;
+        transporter.setMsg(String.valueOf(stringBuilder));
+        return transporter;
     }
 
     @Override

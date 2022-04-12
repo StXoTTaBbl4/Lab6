@@ -3,6 +3,7 @@ package Program.Common.Command.Commands;
 import Program.Common.Command.ICommand;
 import Program.Common.DataClasses.Person;
 import Program.Common.DataClasses.Worker;
+import Program.Server.InnerServerTransporter;
 
 import java.util.LinkedList;
 
@@ -23,26 +24,30 @@ public class CountGtpCommand implements ICommand {
     }
 
     @Override
-    public LinkedList<Worker> handle(String args, LinkedList<Worker> WorkersData) {
+    public InnerServerTransporter handle(InnerServerTransporter transporter) {
 
         AddCommand addCommand = new AddCommand();
         Person person = new Person();
+        String args = transporter.getArgs();
+        LinkedList<Worker> WorkersData = transporter.getWorkersData();
 
         String[] userData = args.replaceAll(",","").split(" ");
 
         if(userData.length < 5){
-            System.out.println("The person fields are incorrect, should be 5.\n" +
+            transporter.setMsg("The person fields are incorrect, should be 5.\n" +
                                 "Example: 2002-02-02 12:20 180 75 passID.");
-            return WorkersData;
+            return transporter;
         }
         else {
-            person = addCommand.createNewPerson(userData[0], userData[1], userData[2], userData[3], userData[4], person);
+            AddCommand.PersonCreator personCreator = new AddCommand.PersonCreator();
+            personCreator = addCommand.createNewPerson(userData[0], userData[1], userData[2], userData[3], userData[4], person);
+            person = personCreator.getPerson();
         }
 
         int k = 0;
         if(person == null) {
-            System.out.println("person is null, cannot be counted.");
-            return WorkersData;
+            transporter.setMsg("Person is null, cannot be counted.");
+            return transporter;
         }
         else {
             for (Worker w : WorkersData) {
@@ -50,13 +55,13 @@ public class CountGtpCommand implements ICommand {
                     if (compare(w.getPerson(), person) > 0)
                         k++;
                 } catch (NullPointerException e) {
-                    System.out.printf("The person field is not set for id: %s.\n", w.getId());
+                    transporter.setMsg("The person field is not set for id: "+w.getId()+" .\n");
                 }
             }
         }
 
-        System.out.println(k);
-        return WorkersData;
+        transporter.setMsg(String.valueOf(k));
+        return transporter;
     }
 
     @Override
