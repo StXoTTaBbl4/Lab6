@@ -23,10 +23,10 @@ public class Client {
         String ip = null;
         int port = -1;
         try {
-            //ip = args[0];
-            //port = Integer.parseInt(args[1]);
-            ip = "localhost";
-            port = 56666;
+            ip = args[0];
+            port = Integer.parseInt(args[1]);
+            //ip = "localhost";
+            //port = 56666;
         } catch (NullPointerException e) {
             System.out.println("Input: ip port(int)");
             System.exit(0);
