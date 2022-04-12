@@ -35,7 +35,7 @@ public class Client {
             System.exit(0);
         }
 
-        System.out.println(isServerOnline(port));
+        System.out.println("Server online: " + isServerOnline(port));
 
         while (true) {
             //Ожидаем ввод сообщения серверу

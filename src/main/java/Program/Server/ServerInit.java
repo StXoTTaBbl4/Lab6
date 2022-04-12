@@ -70,7 +70,7 @@ public class ServerInit {
         InnerServerTransporter innerTransporter = new InnerServerTransporter();
         DatagramPacket incoming = new DatagramPacket(buffer, buffer.length);
 
-        //System.out.println("Ожидаем данные...");
+        System.out.println("Server started, port: " + socket.getLocalPort());
 
         while(true) {
             try {
@@ -79,7 +79,7 @@ public class ServerInit {
                 byte[] data = incoming.getData();
                 transporter = (Transporter) serializer.deserialize(data);
 
-                System.out.println("Сервер получил: " + transporter.getCommand());
+                System.out.println("Сервер получил: " + transporter.getCommand() + "\n");
 
                 innerTransporter.setWorkersData(WorkersData);
                 innerTransporter.setArgs(transporter.getCommand());
