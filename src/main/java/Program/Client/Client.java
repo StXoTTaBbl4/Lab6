@@ -27,7 +27,7 @@ public class Client {
             port = Integer.parseInt(args[1]);
             //ip = "localhost";
             //port = 56666;
-        } catch (NullPointerException e) {
+        } catch (ArrayIndexOutOfBoundsException e) {
             System.out.println("Input: ip port(int)");
             System.exit(0);
         } catch (NumberFormatException e) {
@@ -49,8 +49,7 @@ public class Client {
             if(isServerOnline(port)) {
                 if (manager.validate(transporter)) {
                     //Отправляем сообщение
-                    //b = serializer.serialize(transporter);
-                    communicator.send(transporter, serializer, socket, InetAddress.getByName("localhost"), port);
+                    communicator.send(transporter, serializer, socket, InetAddress.getByName(ip), port);
 
                     //буфер для получения входящих данных
                     byte[] buffer = new byte[65536];

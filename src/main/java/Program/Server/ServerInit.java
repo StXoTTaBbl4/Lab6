@@ -17,11 +17,11 @@ public class ServerInit {
     private LinkedList<Worker> WorkersData;
     private String path;
     private int port;
-    private String ip;
+   //private String ip;
 
     public ServerInit(int port, String ip) {
         this.port = port;
-        this.ip = ip;
+        //this.ip = ip;
     }
 
     private LinkedList<Worker> getWorkersData() {
@@ -58,7 +58,7 @@ public class ServerInit {
 
         DatagramSocket socket = null;
         try {
-            socket = new DatagramSocket(56666);
+            socket = new DatagramSocket(port);
         }catch (SocketException e){
             System.out.println("Failed to create socket.");
             System.exit(0);
