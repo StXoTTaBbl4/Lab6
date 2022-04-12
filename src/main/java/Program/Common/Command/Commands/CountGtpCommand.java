@@ -55,9 +55,10 @@ public class CountGtpCommand implements ICommand {
                     if (compare(w.getPerson(), person) > 0)
                         k++;
                 } catch (NullPointerException e) {
-                    transporter.setMsg("The person field is not set for id: "+w.getId()+" .\n");
+                    transporter.setMsg("The person field is not set for id: " + w.getId() + " .\n");
                 }
             }
+
         }
 
         transporter.setMsg(String.valueOf(k));
@@ -74,7 +75,7 @@ public class CountGtpCommand implements ICommand {
         return "Returns the number of elements whose person field value is greater than the specified value.";
     }
 
-    private int compare(Person a, Person b){
+    private static int compare(Person a, Person b){
         int aScore = 0;
         int bScore = 0;
 

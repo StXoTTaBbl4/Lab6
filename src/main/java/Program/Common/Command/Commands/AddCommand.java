@@ -12,6 +12,7 @@ import java.time.*;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.NoSuchElementException;
+import java.util.function.Consumer;
 
 /**
  * Добавляет новый элемент в коллекцию.
@@ -39,9 +40,13 @@ public class AddCommand implements ICommand {
 
         Collections.sort(WorkerData);
         String[] userData = args.split(",");
-        for (int i = 0; i < userData.length; i++) {
-            userData[i] = userData[i].trim();
-        }
+
+        Consumer<String[]> consumer = userData1 -> {
+            for (int i = 0; i < userData1.length; i++) {
+                userData1[i] = userData1[i].trim();
+            }
+        };
+        consumer.accept(userData);
 
         if (userData.length < 13) {
             transporter.setMsg("Not all options are specified.");
@@ -140,11 +145,10 @@ public class AddCommand implements ICommand {
             WorkerData.add(worker);
             transporter.setWorkersData(WorkerData);
             transporter.setMsg("Command completed.");
-            return transporter;
         } else {
             transporter.setMsg(personCreator.getMsg());
-            return transporter;
         }
+        return transporter;
     }
 
         @Override

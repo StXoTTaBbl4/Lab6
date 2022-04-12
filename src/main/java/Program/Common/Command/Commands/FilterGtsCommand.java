@@ -5,7 +5,9 @@ import Program.Common.DataClasses.Worker;
 import Program.Server.InnerServerTransporter;
 
 import java.io.LineNumberReader;
+import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Выводит элементы, значение поля salary которых больше заданного.
@@ -17,7 +19,7 @@ public class FilterGtsCommand implements ICommand {
             Float.parseFloat(args);
             return true;
         }catch (NumberFormatException e){
-            System.out.println("Некорректный тип данных");
+            System.out.println("Incorrect data type.");
             return false;
         }
     }
@@ -26,7 +28,7 @@ public class FilterGtsCommand implements ICommand {
     public InnerServerTransporter handle(InnerServerTransporter transporter) {
         String args = transporter.getArgs();
         LinkedList<Worker> WorkersData = transporter.getWorkersData();
-        Float salary = null;
+         Float salary = null;
         try {
             salary = Float.parseFloat(args);
         }
@@ -48,6 +50,7 @@ public class FilterGtsCommand implements ICommand {
         }
         transporter.setMsg(String.valueOf(stringBuilder));
         return transporter;
+
     }
 
     @Override

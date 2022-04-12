@@ -23,7 +23,7 @@ public class Initializer {
      * @param worker Проверяемый объект.
      */
     public void DataChecker(Worker worker){
-        if(worker.getName().equals(null) || worker.getName().equals(""))
+        if(worker.getName() == null || worker.getName().equals(""))
             System.out.printf("У работника с id: %s не задано имя \n", worker.getId());
         if(worker.getCoordinates() == null)
             System.out.printf("У работника с id: %s не заданы координаты \n", worker.getId());
@@ -48,7 +48,6 @@ public class Initializer {
     }
 
     /** Метод для загрузки коллекции из файла.
-     *
      * @param path Путь к файлу с данными.
      * @return Коллекуиця типа LinkedList.
      */

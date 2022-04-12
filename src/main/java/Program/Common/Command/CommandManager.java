@@ -103,7 +103,6 @@ public class CommandManager {
     }
 
     /**
-     *
      * @param transporter Объект, содержащий коллекцию, {@link InnerServerTransporter}.
      * @return Объект, содержащий коллекцию после ее обработки командой и текст отчета.
      */

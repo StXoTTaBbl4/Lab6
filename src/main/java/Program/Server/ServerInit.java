@@ -61,6 +61,7 @@ public class ServerInit {
             socket = new DatagramSocket(56666);
         }catch (SocketException e){
             System.out.println("Failed to create socket.");
+            System.exit(0);
         }
 
         byte[] buffer = new byte[65536];
@@ -71,9 +72,7 @@ public class ServerInit {
 
         //System.out.println("Ожидаем данные...");
 
-        while(true)
-        {
-
+        while(true) {
             try {
                 //Получаем данные
                 socket.receive(incoming);
@@ -96,7 +95,7 @@ public class ServerInit {
                 socket.send(dp);
             }catch (SocketException e){
                 transporter.setMessage("A program execution error occurred, message was not generated.");
-                byte[] data = incoming.getData();
+                byte[] data;
                 try {
                     data = serializer.serialize(transporter);
                     DatagramPacket dp = new DatagramPacket(data, data.length, incoming.getAddress(), incoming.getPort());

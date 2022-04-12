@@ -12,12 +12,13 @@ import java.util.LinkedList;
 public class ExitCommand implements ICommand {
     @Override
     public Boolean inputValidate(String args) {
-        return true;
+        return false;
     }
 
     @Override
     public InnerServerTransporter handle(InnerServerTransporter transporter) {
         //System.exit(0);
+        transporter.setMsg("The client cannot shut down the server.");
         return transporter;
     }
 
